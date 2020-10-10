@@ -1,0 +1,21 @@
+[{
+    "Id": 1,
+    "Name": "Les nouvelles",
+    "URL": "https://ici.radio-canada.ca",
+    "Category": "News"
+}, {
+    "Id": 2,
+    "Name": "Sports Experts",
+    "URL": "https://www.sportsexperts.ca/fr-CA/",
+    "Category": "Sport"
+}, {
+    "Id": 3,
+    "Name": "Colnet",
+    "URL": "https://portail2.clg.qc.ca/ColNet/login.asp",
+    "Category": "School"
+}, {
+    "Id": 4,
+    "Name": "Youtube",
+    "URL": "https://youtube.com/",
+    "Category": "Media"
+}]
