@@ -30,7 +30,6 @@ class Response {
     notFound() {
         // not found status
         this.status(404);
-        this.res.end();
     }
     forbidden() {
         // forbidden status

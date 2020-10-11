@@ -1,6 +1,6 @@
-function capitalizeFirstLetter(s){
+function capitalizeFirstLetter(s) {
     if (typeof s !== 'string') return ''
-    return s.charAt(0).toUpperCase() + s.slice(1);   
+    return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 
@@ -20,7 +20,7 @@ function capitalizeFirstLetter(s){
 // For ressource name RessourName you have to name the controller
 // RessourceNamesController that must inherit from Controller class
 /////////////////////////////////////////////////////////////////////
-exports.dispatch_API_EndPoint = function(req, res){
+exports.dispatch_API_EndPoint = function(req, res) {
 
     const Response = require("./response");
     let response = new Response(res);
@@ -37,10 +37,9 @@ exports.dispatch_API_EndPoint = function(req, res){
                 // we assume that the data is in the JSON format
                 if (req.headers['content-type'] === "application/json") {
                     controller[methodName](JSON.parse(body));
-                }
-                else 
+                } else
                     response.unsupported();
-            } catch(error){
+            } catch (error) {
                 console.log(error);
                 response.unprocessable();
             }
@@ -52,7 +51,7 @@ exports.dispatch_API_EndPoint = function(req, res){
 
     // this function check if url contain a valid API endpoint.
     // in the process, controllerName and optional id will be extracted
-    function API_Endpoint_Ok(url){
+    function API_Endpoint_Ok(url) {
         // ignore the query string, it will be handled by the targeted controller
         let queryStringMarkerPos = url.indexOf('?');
         if (queryStringMarkerPos > -1)
@@ -67,30 +66,30 @@ exports.dispatch_API_EndPoint = function(req, res){
                 // by convention controller name -> NameController
                 controllerName = capitalizeFirstLetter(urlParts[2]) + 'Controller';
                 // do we have an id?
-                if (urlParts.length > 3){
+                if (urlParts.length > 3) {
                     if (urlParts[3] !== '') {
                         id = parseInt(urlParts[3]);
-                        if (isNaN(id)) { 
+                        if (isNaN(id)) {
                             response.badRequest();
                             // bad id
                             return false;
                         } else
                         // we have a valid id
-                        return true;
+                            return true;
 
                     } else
-                     // it is ok to have no id
-                     return true;
-                } else
                     // it is ok to have no id
+                        return true;
+                } else
+                // it is ok to have no id
                     return true;
             }
         }
         // bad API endpoint
         return false;
     }
-   
-    if (req.url == "/api"){
+
+    if (req.url == "/api") {
         const endpoints = require('./endpoints');
         endpoints.list(res);
         return true;
@@ -100,12 +99,12 @@ exports.dispatch_API_EndPoint = function(req, res){
         // in the following, we will call the corresponding method of the controller class accordingly  
         // by using the Http verb of the request.
         // for the POST and PUT verb, will we have to extract the data from the body of the request
-        try{
+        try {
             // dynamically import the targeted controller
             // if the controllerName does not exist the catch section will be called
             const Controller = require('./controllers/' + controllerName);
             // instanciate the controller       
-            let controller =  new Controller(req, res);
+            let controller = new Controller(req, res);
 
             // to do : find methods that contain the http verb
             if (req.method === 'GET') {
@@ -113,38 +112,38 @@ exports.dispatch_API_EndPoint = function(req, res){
                 // request consumed
                 return true;
             }
-            if (req.method === 'POST'){
-                processJSONBody(req, controller,"post");
+            if (req.method === 'POST') {
+                processJSONBody(req, controller, "post");
                 // request consumed
                 return true;
             }
-            if (req.method === 'PUT'){
-                processJSONBody(req, controller,"put");
+            if (req.method === 'PUT') {
+                processJSONBody(req, controller, "put");
                 // request consumed
                 return true;
             }
-            if (req.method === 'PATCH'){
-                processJSONBody(req, controller,"patch");
+            if (req.method === 'PATCH') {
+                processJSONBody(req, controller, "patch");
                 // request consumed
                 return true;
             }
             if (req.method === 'DELETE') {
                 if (!isNaN(id))
                     controller.remove(id);
-                else 
+                else
                     response.badRequest();
                 // request consumed
                 return true;
             }
-        } catch(error){
+        } catch (error) {
             // catch likely called because of missing controller class
             // i.e. require('./' + controllerName) failed
             // but also any unhandled error...
             console.log('endpoint not found');
             console.log(error);
             response.notFound();
-                // request consumed
-                return true;
+            // request consumed
+            return true;
         }
     }
     // not an API endpoint

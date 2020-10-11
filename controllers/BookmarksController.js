@@ -1,5 +1,7 @@
 const Repository = require('../models/Repository');
 const Response = require('../response');
+const Bookmark = require('../models/Bookmark');
+const url = require('url');
 
 module.exports =
     class BookmarksController extends require('./Controller') {
@@ -12,13 +14,11 @@ module.exports =
         // GET: api/bookmarks/{id}
         get(id) {
             let params = super.getQueryStringParams();
-            console.log(params);
             var response;
             if (params != null && Object.keys(params).length == 0) {
                 this.help();
             } else if (!isNaN(id)) {
                 response = this.bookmarksRepository.get(id);
-                this.response.JSON(response);
             } else {
                 response = this.validFilter(params)
                 if (response == '') {
@@ -42,13 +42,13 @@ module.exports =
                 } else {
                     this.response.badRequest();
                 }
-                this.response.JSON(response);
             }
+            this.response.JSON(response);
         }
 
-        // POST: api/bookmarks body payload[{"Id": 0, "Name": "...", "URL": "...", "Category": "..."}]
+        // POST: api/bookmarks body payload[{"Name": "...", "URL": "...", "Category": "..."}]
         post(bookmark) {
-                let params = super.getQueryStringParams();
+
                 if (this.verifyBookmark(bookmark)) {
                     let newBookmark = this.bookmarksRepository.add(bookmark);
                     if (newBookmark)
@@ -61,10 +61,9 @@ module.exports =
             }
             // PUT: api/bookmarks body payload[{"Id":..., "Name": "...", "URL": "...", "Category": "..."}]
         put(bookmark) {
-            console.log(super.getQueryStringParams());
-            bookmark.Id = super.getQueryStringParams().Id;
             if (this.verifyBookmark(bookmark)) {
-                if (this.bookmarksRepository.update(contact))
+                bookmark.Id = parseInt(this.req.url.split("/")[3]);
+                if (this.bookmarksRepository.update(bookmark))
                     this.response.ok();
                 else
                     this.response.notFound();
@@ -73,22 +72,20 @@ module.exports =
         }
 
         verifyBookmark(bookmark) {
-            if (bookmark.Id == "" || bookmark.Id == null)
-                return false;
-            if (bookmark.name = "" || bookmark.name == null)
-                return false;
-            if (bookmark.URL = "" || bookmark.URL == null)
-                return false;
-            if (bookmark.category = "" || bookmark.category == null)
-                return false;
-            this.bookmarksRepository.forEach((elem) => {
-                if (elem.URL == bookmark.URL)
-                    return false;
-            })
-            return true;
-        }
 
-        // DELETE: api/bookmarks/{id}
+                if (bookmark.Name == "" || bookmark.Name == null)
+                    return false;
+                if (bookmark.URL == "" || bookmark.URL == null)
+                    return false;
+                if (bookmark.Category == "" || bookmark.Category == null)
+                    return false;
+                //Examples of valid regex: http://youtube.com (MUST HAVE HTTP OR HTTPS)
+                if (!bookmark.URL.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,4}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)?/gi))) {
+                    return false;
+                }
+                return true;
+            }
+            // DELETE: api/bookmarks/{id}
         remove(id) {
             if (!isNaN(id)) {
                 if (this.bookmarksRepository.remove(id))
