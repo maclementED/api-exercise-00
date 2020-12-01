@@ -6,3 +6,4 @@ This project has been created for 420-KGB-LG course.
 
 # Contributors 
 * Max-Antoine Clément
+* Another teammate
